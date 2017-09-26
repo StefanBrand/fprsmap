@@ -39,6 +39,8 @@
 
   var EXCLUDED_LAYERS = ['shops', 'repairshops'];
 
+  var DEFAULTZOOMLEVEL = 2;
+
   /* Variables (state) */
   var map;
   var layerControls;
@@ -112,7 +114,7 @@
       }, permanentLayers || []);
   }
 
-  function initMap(defaultOverlays) {
+  function initMap(initialZoomLevel,defaultOverlays) {
     var baseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a> | &copy; <a href="https://github.com/WeAreFairphone/fprsmap" target="_blank">WeAreFairphone</a> (<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPLv3</a>)',
       maxZoom: 18,
@@ -120,7 +122,7 @@
 
     map = L.map('mapid', {
       center: [49.8158683, 6.1296751],
-      zoom: 2,
+      zoom: initialZoomLevel,
       minZoom: 2,
       layers: getInitialLayers(overlaysData, defaultOverlays, [baseLayer, cluster]),
       worldCopyJump: true,
@@ -173,6 +175,17 @@
     return overlays.split(',');
   }
 
+  function getInitialZoomLevel() {
+    var zoomlevel = getQueries().zoom; //all queries after "zoom="
+    if (!zoomlevel) {
+      return DEFAULTZOOMLEVEL;
+    } else if ((parseFloat(zoomlevel) >= 2) && (parseFloat(zoomlevel) <= 18)){
+      return parseFloat(zoomlevel);
+    } else {
+      return DEFAULTZOOMLEVEL;
+    }
+  }
+
   function onMovestart(e) {
     if(!layerControls.collapsed) {
       layerControls.collapse();
@@ -205,7 +218,8 @@
 
   /* Main */
   var defaultOverlays = getDefaultOverlays();
-  initMap(defaultOverlays);
+  var initialZoomLevel = getInitialZoomLevel();
+  initMap(initialZoomLevel,defaultOverlays);
   initControls();
 
   // Add listeners
