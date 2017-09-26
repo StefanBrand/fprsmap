@@ -39,6 +39,8 @@
 
   var EXCLUDED_LAYERS = ['shops', 'repairshops'];
 
+  var DEFAULTMAPCENTER = [49.8158683, 6.1296751];
+
   var DEFAULTZOOMLEVEL = 2;
 
   /* Variables (state) */
@@ -114,14 +116,14 @@
       }, permanentLayers || []);
   }
 
-  function initMap(initialZoomLevel,defaultOverlays) {
+  function initMap(initialMapCenter,initialZoomLevel,defaultOverlays) {
     var baseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a> | &copy; <a href="https://github.com/WeAreFairphone/fprsmap" target="_blank">WeAreFairphone</a> (<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPLv3</a>)',
       maxZoom: 18,
     });
 
     map = L.map('mapid', {
-      center: [49.8158683, 6.1296751],
+      center: initialMapCenter,
       zoom: initialZoomLevel,
       minZoom: 2,
       layers: getInitialLayers(overlaysData, defaultOverlays, [baseLayer, cluster]),
@@ -175,6 +177,17 @@
     return overlays.split(',');
   }
 
+  function getInitialMapCenter() {
+    var mapcenter = getQueries().center; //all queries after "center="
+    if(!mapcenter) {
+      return DEFAULTMAPCENTER;
+    } else if ((mapcenter.split(',').length === 2) && parseFloat(mapcenter.split(',')[0]) && parseFloat(mapcenter.split(',')[1])) {
+      return [parseFloat(mapcenter.split(',')[0]),parseFloat(mapcenter.split(',')[1])];
+    } else {
+      return DEFAULTMAPCENTER;
+    }
+  }
+
   function getInitialZoomLevel() {
     var zoomlevel = getQueries().zoom; //all queries after "zoom="
     if (!zoomlevel) {
@@ -218,8 +231,9 @@
 
   /* Main */
   var defaultOverlays = getDefaultOverlays();
+  var initialMapCenter = getInitialMapCenter();
   var initialZoomLevel = getInitialZoomLevel();
-  initMap(initialZoomLevel,defaultOverlays);
+  initMap(initialMapCenter,initialZoomLevel,defaultOverlays);
   initControls();
 
   // Add listeners
