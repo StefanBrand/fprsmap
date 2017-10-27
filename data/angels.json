@@ -13,11 +13,15 @@ angels:
     lat_lng: [53.550341,10.000654]
   - location: Northengland
     lat_lng: [53.7941567,-1.7494778]
+  - location: Ruhr
+    lat_lng: 	[51.5718665,6.9877343]
+  - location: Ruhr
+    lat_lng: 	[51.4818111,7.2196635]
   - location: Stuttgart
     lat_lng: [48.7784485, 9.1800132]
   - location: Vienna
     lat_lng: [48.2083537, 16.3725042]
----
+  ---
 {
   "list": {{ page.angels | jsonify }}
 }
