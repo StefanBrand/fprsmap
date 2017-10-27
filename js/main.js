@@ -63,6 +63,10 @@
       title: "Repair Shops",
       overlay: L.featureGroup.subGroup(cluster),
     },
+    repairshops: {
+      title: "Repair Shops",
+      overlay: L.featureGroup.subGroup(cluster),
+    },
     shops: {
       title: "Shops & Showrooms",
       overlay: L.featureGroup.subGroup(cluster),
@@ -302,6 +306,22 @@
           };
         });
       });
+
+  // Populate Repairshops overlay
+  fetchJSON('data/repairshops.json')
+    .then(function(json) {
+      // Add a marker per repairshop
+      json.list.forEach(function(repairshop) {
+        var marker = L.marker(repairshop.lat_lng, { icon: MARKERICONS.green, riseOnHover: true })
+          .bindPopup(
+            '<a href="' + repairshop.website + '" target="_blank">' + repairshop.name + '</a><br><div class="shopinfo">' +
+              repairshop.address + '<br>' +
+              repairshop.zipcode + ' ' + repairshop.city + '</div>',
+            { offset: new L.Point(0, -25) }
+          );
+        marker.addTo(overlaysData.repairshops.overlay);
+      });
+    });
 
   // Populate Repairshops overlay
   fetchJSON('data/repairshops.json')
